@@ -88,10 +88,12 @@ Request.prototype.get = function(callback) {
   request.send();
   }
 
+// ---------------
+
   Request.prototype.post = function(callback, payload) {
     const request = new XMLHttpRequest();
     request.open('POST', this.url);
-    request.setRequestHeader('Content-Type', 'application/json'); // NEW
+    request.setRequestHeader('Content-Type', 'application/json');
     request.addEventListener('load', function() {
       if(this.status !== 201) {
         return;
@@ -103,6 +105,21 @@ Request.prototype.get = function(callback) {
     });
     request.send(JSON.stringify(payload));
   }
+
+  // --------------
+
+  Request.prototype.delete = function(callback) {
+  const request = new XMLHttpRequest();
+  request.open('DELETE', this.url);
+  request.addEventListener('load', function() {
+    if(this.status !== 204) {
+      return;
+    }
+
+    callback();
+  });
+  request.send();
+}
 
 module.exports = Request;
 
@@ -171,16 +188,34 @@ const getQuotesRequestComplete = function(allQuotes)  {
 }
 // -------------------
 
+const deleteButtonClicked = function() {
+  request.delete(deleteRequestComplete);
+}
+// -----------------
+
+const deleteRequestComplete = function() {
+  quoteView.clear();
+}
+// -----------------
+
 const appStart = function(){
   request.get(getQuotesRequestComplete);
 
+// CREATE BUTTON
   const createQuoteButton = document.querySelector('#submit-quote');
   createQuoteButton.addEventListener('click', createButtonClicked);
+
+// DELETE BUTTON
+  const deleteButton = document.querySelector('#deleteButton');
+  deleteButton.addEventListener('click', deleteButtonClicked);
 }
 
 const createRequestComplete = function(newQuote) {
   quoteView.addQuote(newQuote);
 }
+// -------------
+
+
 
 document.addEventListener('DOMContentLoaded', appStart);
 

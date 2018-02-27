@@ -27,15 +27,33 @@ const getQuotesRequestComplete = function(allQuotes)  {
 }
 // -------------------
 
+const deleteButtonClicked = function() {
+  request.delete(deleteRequestComplete);
+}
+// -----------------
+
+const deleteRequestComplete = function() {
+  quoteView.clear();
+}
+// -----------------
+
 const appStart = function(){
   request.get(getQuotesRequestComplete);
 
+// CREATE BUTTON
   const createQuoteButton = document.querySelector('#submit-quote');
   createQuoteButton.addEventListener('click', createButtonClicked);
+
+// DELETE BUTTON
+  const deleteButton = document.querySelector('#deleteButton');
+  deleteButton.addEventListener('click', deleteButtonClicked);
 }
 
 const createRequestComplete = function(newQuote) {
   quoteView.addQuote(newQuote);
 }
+// -------------
+
+
 
 document.addEventListener('DOMContentLoaded', appStart);
