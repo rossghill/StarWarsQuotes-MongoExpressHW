@@ -88,6 +88,21 @@ Request.prototype.get = function(callback) {
   request.send();
   }
 
+  Request.prototype.post = function(callback, payload) {
+    const request = new XMLHttpRequest();
+    request.open('POST', this.url);
+    request.setRequestHeader('Content-Type', 'application/json'); // NEW
+    request.addEventListener('load', function() {
+      if(this.status !== 201) {
+        return;
+      }
+
+      const responseBody = JSON.parse(this.responseText);
+
+      callback(responseBody);
+    });
+    request.send(JSON.stringify(payload));
+  }
 
 module.exports = Request;
 
@@ -132,24 +147,39 @@ const Request = __webpack_require__(0);
 
 const quoteView = new QuoteView();
 const request = new Request('http://localhost:3000/api/quotes');
+// ----------------------
 
 const createButtonClicked = function(event) {
   event.preventDefault();
   console.log('form submit clicked');
+
+  const nameInputValue = document.querySelector('#name').value;
+  const quoteInputValue = document.querySelector('#quote').value;
+
+  const quoteToSend = {
+  name: nameInputValue,
+  quote: quoteInputValue
+  }
+  request.post(createRequestComplete, quoteToSend);
 }
+// ------------------------
 
 const getQuotesRequestComplete = function(allQuotes)  {
   allQuotes.forEach(function(quote) {
     quoteView.addQuote(quote);
   });
 }
+// -------------------
 
 const appStart = function(){
   request.get(getQuotesRequestComplete);
 
   const createQuoteButton = document.querySelector('#submit-quote');
   createQuoteButton.addEventListener('click', createButtonClicked);
+}
 
+const createRequestComplete = function(newQuote) {
+  quoteView.addQuote(newQuote);
 }
 
 document.addEventListener('DOMContentLoaded', appStart);
